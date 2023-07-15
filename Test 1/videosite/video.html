@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Video Player</title>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="mt-4 mb-4">Video Player</h1>
+    <div class="row">
+      <div class="col-md-12">
+        <iframe id="video-iframe" width="100%" height="400" src="" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <button id="like-btn" class="btn btn-success" onclick="toggleLike()">Like (0)</button>
+        <button id="dislike-btn" class="btn btn-danger" onclick="toggleDislike()">Dislike (0)</button>
+      </div>
+      <div class="col-md-6">
+        <button class="btn btn-primary" onclick="showCommentForm()">Add Comment</button>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <ul id="comments-list" class="list-group">
+          <!-- Comments will be dynamically populated here -->
+        </ul>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <form id="comment-form" style="display: none;">
+          <div class="form-group">
+            <label for="comment-input">Comment</label>
+            <textarea id="comment-input" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="addComment()">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('id');
+    const videoUrl = `https://www.youtube.com/embed/${videoId}`;
+
+    document.getElementById('video-iframe').src = videoUrl;
+
+    let likeCount = 0;
+    let dislikeCount = 0;
+    let liked = false;
+    let disliked = false;
+
+    function toggleLike() {
+      if (liked) {
+        likeCount--;
+        liked = false;
+      } else {
+        likeCount++;
+        liked = true;
+
+        if (disliked) {
+          dislikeCount--;
+          disliked = false;
+        }
+      }
+
+      updateLikeDislikeUI();
+    }
+
+    function toggleDislike() {
+      if (disliked) {
+        dislikeCount--;
+        disliked = false;
+      } else {
+        dislikeCount++;
+        disliked = true;
+
+        if (liked) {
+          likeCount--;
+          liked = false;
+        }
+      }
+
+      updateLikeDislikeUI();
+    }
+
+    function updateLikeDislikeUI() {
+      const likeBtn = document.getElementById('like-btn');
+      const dislikeBtn = document.getElementById('dislike-btn');
+
+      likeBtn.innerText = `Like (${likeCount})`;
+      dislikeBtn.innerText = `Dislike (${dislikeCount})`;
+
+      likeBtn.classList.toggle('btn-success', liked);
+      likeBtn.classList.toggle('btn-secondary', !liked);
+      dislikeBtn.classList.toggle('btn-danger', disliked);
+      dislikeBtn.classList.toggle('btn-secondary', !disliked);
+    }
+
+    function showCommentForm() {
+      document.getElementById('comment-form').style.display = 'block';
+    }
+
+    function addComment() {
+      const commentInput = document.getElementById('comment-input').value.trim();
+      if (commentInput !== '') {
+        const commentList = document.getElementById('comments-list');
+        const commentItem = document.createElement('li');
+        commentItem.className = 'list-group-item';
+        commentItem.innerText = commentInput;
+        commentList.appendChild(commentItem);
+        document.getElementById('comment-input').value = '';
+      }
+    }
+  </script>
+</body>
+
+</html>
